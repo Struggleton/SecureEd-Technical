@@ -26,7 +26,9 @@ export class Database implements IDatabase {
 	 * @returns The instance of the database.
 	 */
 	public static getInstance(): IDatabase {
-		return new Database();
+		if (this._instance == null)
+			this._instance = new Database();
+		return this._instance;
 	}
 
 	public getPasswords(query: GetPasswordsQuery): Password[] {
