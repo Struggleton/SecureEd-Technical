@@ -45,7 +45,11 @@ export class Database implements IDatabase {
 			passwords = passwords.filter((password) => password.website === website);
 		}
 
-		return this.passwords;
+		passwords.forEach(encryptedPassword => {
+			encryptedPassword.password = EncryptService.decryptPassword(encryptedPassword.password);
+		})
+		
+		return passwords;
 	}
 
 	public createPassword(newPassword: Password): void {
