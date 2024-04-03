@@ -25,8 +25,10 @@ You can structure this devlog however you like.  You could keep one file and mar
   - Nodemon is for reloading the node application when any code changes are made (similar to Hot Reload in VS C# projects)
 
   First initial thoughts
-  - GET request using Postman (127.1:3000/passwords) returns a json object with each password/id/website in plaintext. This is done with no required credentials to log into the database (maybe require a request with the proper credentials and/or encrypted responses.) which is dangerous since GET requests can be cached and  
-    - I assume this output is n
+  - GET request using Postman (127.1:3000/passwords) returns a json object with each password/id/website in plaintext. This is done with no required credentials to log into the database (maybe require a request with the proper credentials and/or encrypted responses.) which is dangerous since GET requests can be cached and intercepted by attackers
+  - I found a bug where multiple GET requests cause passwords to become malformed. 
+    - This could be due to the constructor being called multiple times, which encrypts the passwords
 
-  - Initial questions
-    Is there a way to remove 
+  - The naming conventions in database.ts and potentially other files is confusing as it uses the same names as private fields (which I do think may lead to potential confusion and coding errors because of it. I personally do not like using the 'this' keyword because it can lead to a lot of confusion.) For the sake of trying to keep variable name parity with the original code base I won't change them, but if this was an actual project I'd submit a pull request to rename variables and make it less confusing
+  
+  - I need to do a bug/unintended behavior write up on the password decryption not happening and finish the one on multiple GET requests
