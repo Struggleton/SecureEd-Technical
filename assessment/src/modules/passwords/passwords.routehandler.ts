@@ -17,6 +17,7 @@ export class PasswordsRoutehandler {
 	private static getPasswords(req: Request, res: Response, next: NextFunction) {
 		try {
 			const query: GetPasswordsQuery = {
+				username: req.query.username as string,
 				website: req.query.website as string,
 				id: req.query.id as string,
 			};

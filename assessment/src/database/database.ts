@@ -4,19 +4,17 @@ import { IDatabase } from "./idatabase";
 
 export class Database implements IDatabase {
 	private static _instance: IDatabase;
-
 	private passwords: Password[] = [];
 
 	private constructor() {
 		// Load in passwords from json file
-		const passwords = require("../../passwords/passwords.json");
-		for (const password of passwords["savedPasswords"]) {
+		const savedPasswords = require("../../passwords/passwords.json");
+		for (const savedPassword of savedPasswords["savedPasswords"]) {
 			// Encrypt the password
-			const encrypted = EncryptService.encryptPassword(password.password);
-			password.password = encrypted;
-			this.passwords.push(password);
+			const encrypted = EncryptService.encryptPassword(savedPassword.password);
+			savedPassword.password = encrypted;
+			this.passwords.push(savedPassword);
 		}
-		console.log(this.passwords);
 	}
 
 	/**
@@ -28,28 +26,30 @@ export class Database implements IDatabase {
 	public static getInstance(): IDatabase {
 		if (this._instance == null)
 			this._instance = new Database();
+
 		return this._instance;
 	}
 
 	public getPasswords(query: GetPasswordsQuery): Password[] {
 		const { username, website, id } = query;
-		let passwords = this.passwords;
 
-		if (username) {
-			passwords = passwords.filter(
-				(password) => password.username === username
-			);
-		}
-
-		if (website) {
-			passwords = passwords.filter((password) => password.website === website);
-		}
-
-		passwords.forEach(encryptedPassword => {
-			encryptedPassword.password = EncryptService.decryptPassword(encryptedPassword.password);
-		})
+		let queriedPasswords: Password[] = [];
 		
-		return passwords;
+		this.passwords.forEach((password) => { 
+			if ((!username || username == password.username) &&
+            	(!website || password.website == website) &&
+				(!id || password.id == id)) {
+				 // Create a copy of the password object so
+				 // we don't modify the original password object
+				 const decryptedPassword = { ...password };
+				 // Decrypt password
+				 decryptedPassword.password = EncryptService.decryptPassword(password.password);
+				 // Push the decrypted password to queriedPasswords
+				 queriedPasswords.push(decryptedPassword);
+        	}
+		});
+ 		
+		return queriedPasswords;
 	}
 
 	public createPassword(newPassword: Password): void {
