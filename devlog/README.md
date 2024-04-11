@@ -28,7 +28,15 @@ You can structure this devlog however you like.  You could keep one file and mar
   - GET request using Postman (127.1:3000/passwords) returns a json object with each password/id/website in plaintext. This is done with no required credentials to log into the database (maybe require a request with the proper credentials and/or encrypted responses.) which is dangerous since GET requests can be cached and intercepted by attackers
   - I found a bug where multiple GET requests cause passwords to become malformed. 
     - This could be due to the constructor being called multiple times, which encrypts the passwords
+    - Passwords are also not being decrypted before passing them to the user
 
-  - The naming conventions in database.ts and potentially other files is confusing as it uses the same names as private fields (which I do think may lead to potential confusion and coding errors because of it. I personally do not like using the 'this' keyword because it can lead to a lot of confusion.) For the sake of trying to keep variable name parity with the original code base I won't change them, but if this was an actual project I'd submit a pull request to rename variables and make it less confusing
+  - The naming conventions in database.ts and potentially other files is confusing as it uses the same names as private fields (which I do think may lead to potential confusion and coding errors because of it)
   
   - I need to do a bug/unintended behavior write up on the password decryption not happening and finish the one on multiple GET requests
+  
+  4/10/2024
+  - I think the type 'Password' is confusing as it encapsulates more than a password. It includes fields for username, password, websites and an id. This type should be renamed to something more accurate to its usage (ex: LoginInfo) 
+  - The database GET command does not take into account the id field. Adding a check for it
+  - Fixed the bug where passwords would become malformed on multiple get requests
+    - Also fixed the issue where passwords were not being decrypted before sending it to the user.
+  - I found out that the passwords.routehandler.ts file wasn't taking into account the username query string when passing the query to the getPasswords function
