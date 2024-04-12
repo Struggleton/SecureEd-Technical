@@ -17,7 +17,6 @@ export class PasswordManagerComponent {
 
 	public static build(): PasswordManagerComponent {
 		const database = Database.getInstance();
-
 		return new PasswordManagerComponent(database);
 	}
 
@@ -68,7 +67,7 @@ export class PasswordManagerComponent {
 			// Encrypt the updated password
 			password.password = EncryptService.encryptPassword(updates.password);
 		}
-		
+
 		if (updates.username) {
 			password.username = updates.username;
 		}
@@ -81,7 +80,13 @@ export class PasswordManagerComponent {
 	}
 
 	public deletePassword(id: string) {
-		// Delete the password
-		this.database.deletePassword(id);
+		// Try to delete the password. Get the index of the password deleted
+		const index = this.database.deletePassword(id);
+
+		// If it equals -1, throw a service error because the password does 
+		// not exist
+		if (index === -1){
+			this.throwError(ServiceErrorType.NOT_FOUND, "Password not found in list!");
+		}
 	}
 }

@@ -1,4 +1,4 @@
-import { GetPasswordsQuery, Password, Todo } from "../shared/types";
+import { GetPasswordsQuery, Password, } from "../shared/types";
 
 /**
  * Represents a database interface.
@@ -28,11 +28,16 @@ export interface IDatabase {
 	 * Deletes a password from the database.
 	 * @param id The id of the password to delete.
 	 */
-	deletePassword(id: string): void;
+	deletePassword(id: string): number;
 
 	/**
 	 * Creates a new password in the database.
 	 * @param newPassword The new password to be created.
 	 */
 	createPassword(newPassword: Password): void;
+
+	/**
+	 * Saves the list of passwords to file.
+	 */
+	//savePasswords(): void;
 }

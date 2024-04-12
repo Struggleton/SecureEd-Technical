@@ -50,7 +50,7 @@ export class PasswordsRoutehandler {
 	) {
 		try {
 			// Remove id tag from string
-			let passwordID = req.params.id.substring(3)
+			let passwordID = req.params.id.substring(3);
 			PasswordManagerComponent.build().updatePassword(passwordID, req.body);
 			res.status(204).json({ message: "Password updated" });
 		} catch (error) {
@@ -64,7 +64,8 @@ export class PasswordsRoutehandler {
 		next: NextFunction
 	) {
 		try {
-			PasswordManagerComponent.build().deletePassword(req.params.id);
+			let passwordID = req.params.id.substring(3);
+			PasswordManagerComponent.build().deletePassword(passwordID);
 			res.status(204).json({ message: "Password deleted" });
 		} catch (error) {
 			next(error);

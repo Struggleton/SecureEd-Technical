@@ -34,7 +34,6 @@ export class Database implements IDatabase {
 		const { username, website, id } = query;
 
 		let queriedPasswords: Password[] = [];
-		
 		this.passwords.forEach((password) => { 
 			if ((!username || username == password.username) &&
             	(!website || password.website == website) &&
@@ -69,10 +68,43 @@ export class Database implements IDatabase {
 		this.passwords[index] = updatedPassword;
 	}
 
-	public deletePassword(id: string): void {
+	public deletePassword(id: string): number {
 		// Find the index of the password to delete
 		const index = this.passwords.findIndex((password) => password.id === id);
-		// Delete the password
-		this.passwords.splice(index, 1);
+
+		// Delete the password, if it exists.
+		if (index !== -1){
+			this.passwords.splice(index, 1);
+		}
+		
+		return index;
 	}
+
+	/* 
+	public savePasswords() {
+		// Decrypt the passwords before saving them
+		let decryptedPasswords: Password[] = [];
+		this.passwords.forEach((password) => { 
+			// Create a copy of the password object so
+			// we don't modify the original password object
+			const decryptedPassword = { ...password };
+			// Decrypt password
+			decryptedPassword.password = EncryptService.decryptPassword(password.password);
+			// Push the decrypted password to queriedPasswords
+			decryptedPasswords.push(decryptedPassword);
+		});
+		
+		// Stringify the password array and prettify it.
+		let passwordJSON = JSON.stringify(decryptedPasswords, null, 3);
+
+		// Import fs class and use it to write the passwords to password.json.
+		// If it doesn't exist, create it.
+		const fs = require('fs');
+		fs.writeFile("./passwords/password.json", passwordJSON, { flag: 'w' }, (callback:any) => {
+			if (callback) {
+				console.log(callback);
+			}
+		});
+	} 
+	*/
 }
