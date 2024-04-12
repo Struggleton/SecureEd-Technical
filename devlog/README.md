@@ -40,3 +40,20 @@ You can structure this devlog however you like.  You could keep one file and mar
   - Fixed the bug where passwords would become malformed on multiple get requests
     - Also fixed the issue where passwords were not being decrypted before sending it to the user.
   - I found out that the passwords.routehandler.ts file wasn't taking into account the username query string when passing the query to the getPasswords function
+
+  4/11/2024
+  - The server was not checking for the website part of the password, fixed that
+    - I want to make a more extensible way of checking for fields. Ideally there'd be a lookup table for each field and its error message 
+  - Are the passwords supposed to be saved back to the file passwords file? I'm going to assume not but I'm going to write a function for saving it back to a file just in case
+  - I fixed the server returning the username instead of the ID for the password
+  
+  4/12/2024
+  - I shortened the code validating the password fields using ?? operators and a nested function
+  - There should be some code to validate if the body is formatted properly. 
+    - Added a message to the middleware to see if it returns a SyntaxError (error thrown when the body is invalid), and tell the user that their JSON body is invalid.
+  - The message for being unable to update an ID should be a little more detailed I think
+  - Fixed an issue where the updated password wasn't getting taken into account
+  - I moved the nested function that I use to throw errors outside so that the other functions can use it to throw errors.
+    - Not sure if it's better just to use 'throw new ServiceError()' versus creating a helper function. But I use the helper function during the null checks
+
+  - I wonder if there's a module or something that enforces style checks. I will look into that because I want the project to follow a consistent style, and since this is my first time programming Javascript/Typescript, I don't know proper coding conventions
