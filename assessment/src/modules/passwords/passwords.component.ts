@@ -21,33 +21,29 @@ export class PasswordManagerComponent {
 	}
 
 	public createPassword(newPassword: Partial<Password>): string {
+		function throwError(errorMessage: string): never {
+			throw new ServiceError(
+				ServiceErrorType.BAD_REQUEST,
+				errorMessage
+			);
+		}
+
 		// Validate the new password
-		if (!newPassword.password) {
-			throw new ServiceError(
-				ServiceErrorType.BAD_REQUEST,
-				"Password is required"
-			);
-		}
-		if (!newPassword.username) {
-			throw new ServiceError(
-				ServiceErrorType.BAD_REQUEST,
-				"Username is required"
-			);
-		}
+		newPassword.username ?? throwError("Username is required")
+		newPassword.website ?? throwError("Website is required")
+		newPassword.password ?? throwError("Password is required")
 
-		// Encrypt the new password
-		const encrypted = EncryptService.encryptPassword(newPassword.password);
-
-		// Create id
+		// Create id 
 		newPassword.id = randomUUID();
 		// Save the new password
 		this.database.createPassword({
 			...(newPassword as Password),
-			password: encrypted,
+			// Encrypt password
+			password: EncryptService.encryptPassword(newPassword.password!)
 		});
 
-		console.log(encrypted);
-		return newPassword.username;
+		// Return the password's ID
+		return newPassword.id;
 	}
 
 	public updatePassword(id: string, updates: Partial<Password>) {
