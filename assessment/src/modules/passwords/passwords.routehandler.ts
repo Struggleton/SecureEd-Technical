@@ -49,7 +49,9 @@ export class PasswordsRoutehandler {
 		next: NextFunction
 	) {
 		try {
-			PasswordManagerComponent.build().updatePassword(req.params.id, req.body);
+			// Remove id tag from string
+			let passwordID = req.params.id.substring(3)
+			PasswordManagerComponent.build().updatePassword(passwordID, req.body);
 			res.status(204).json({ message: "Password updated" });
 		} catch (error) {
 			next(error);
