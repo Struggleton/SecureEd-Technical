@@ -34,6 +34,8 @@ export class ExpressConfig {
 		console.log(err);
 		if (err instanceof ServiceError) {
 			res.status(err.statusCode).send(err.message);
+		} else if (err instanceof SyntaxError) {
+			res.status(500).send("Invalid JSON body!");
 		} else {
 			res.status(500).send("Internal server error");
 		}
