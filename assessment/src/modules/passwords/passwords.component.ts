@@ -8,6 +8,13 @@ import { GetPasswordsQuery, Password } from "../../shared/types";
 export class PasswordManagerComponent {
 	private constructor(private database: IDatabase) {}
 
+	private throwError(errorType: ServiceErrorType, errorMessage: string): never {
+		throw new ServiceError(
+			errorType,
+			errorMessage
+		);
+	}
+
 	public static build(): PasswordManagerComponent {
 		const database = Database.getInstance();
 
@@ -21,17 +28,10 @@ export class PasswordManagerComponent {
 	}
 
 	public createPassword(newPassword: Partial<Password>): string {
-		function throwError(errorMessage: string): never {
-			throw new ServiceError(
-				ServiceErrorType.BAD_REQUEST,
-				errorMessage
-			);
-		}
-
 		// Validate the new password
-		newPassword.username ?? throwError("Username is required")
-		newPassword.website ?? throwError("Website is required")
-		newPassword.password ?? throwError("Password is required")
+		newPassword.username ?? this.throwError(ServiceErrorType.BAD_REQUEST, "Username is required")
+		newPassword.website ?? this.throwError(ServiceErrorType.BAD_REQUEST, "Website is required")
+		newPassword.password ?? this.throwError(ServiceErrorType.BAD_REQUEST, "Password is required")
 
 		// Create id 
 		newPassword.id = randomUUID();
@@ -49,23 +49,26 @@ export class PasswordManagerComponent {
 	public updatePassword(id: string, updates: Partial<Password>) {
 		// Check if the password exists
 		const password = this.database.getPassword(id);
-		if (!password) {
-			throw new ServiceError(ServiceErrorType.NOT_FOUND, "Password not found");
-		}
+		if (!password) 
+			this.throwError(ServiceErrorType.NOT_FOUND,"Password not found!")
 
-		// Validate the updated password
+		// Validate if the request body has an id tag
 		if (updates.id) {
-			throw new ServiceError(
-				ServiceErrorType.BAD_REQUEST,
-				"ID cannot be updated"
-			);
+			this.throwError(ServiceErrorType.BAD_REQUEST, "The ID field cannot be updated")
 		}
 
-		// Encrypt the updated password
+		// Check if update files are null/undefined
+		updates.username ?? this.throwError(ServiceErrorType.BAD_REQUEST, "Username field is required")
+		updates.website ?? this.throwError(ServiceErrorType.BAD_REQUEST, "Website field is required")
+		updates.password ?? this.throwError(ServiceErrorType.BAD_REQUEST, "Password field is required")
+
+		// Check fields for empty strings. If they are not empty
+		// apply the update
 		if (updates.password) {
-			password.password = password.password;
+			// Encrypt the updated password
+			password.password = EncryptService.encryptPassword(updates.password);
 		}
-		// Apply updates
+		
 		if (updates.username) {
 			password.username = updates.username;
 		}
