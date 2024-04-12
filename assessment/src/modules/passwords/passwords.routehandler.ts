@@ -16,11 +16,14 @@ export class PasswordsRoutehandler {
 
 	private static getPasswords(req: Request, res: Response, next: NextFunction) {
 		try {
+			// Generate query object
 			const query: GetPasswordsQuery = {
 				username: req.query.username as string,
 				website: req.query.website as string,
 				id: req.query.id as string,
 			};
+
+			// Send query 
 			const passwords = PasswordManagerComponent.build().getPasswords(query);
 			res.send(passwords);
 		} catch (error) {
@@ -28,16 +31,13 @@ export class PasswordsRoutehandler {
 		}
 	}
 
-	private static createPassword(
-		req: Request,
-		res: Response,
-		next: NextFunction
-	) {
+	private static createPassword(req: Request, res: Response, next: NextFunction) {
 		try {
-			const password = PasswordManagerComponent.build().createPassword(
+			const id = PasswordManagerComponent.build().createPassword(
 				req.body
 			);
-			res.send(password);
+			// Send JSON formatted ID
+			res.send({ id: `${id}` });
 		} catch (error) {
 			next(error);
 		}
