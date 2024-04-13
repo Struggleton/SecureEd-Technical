@@ -28,10 +28,18 @@ export class PasswordManagerComponent {
 
 	public createPassword(newPassword: Partial<Password>): string {
 		// Validate the new password
-		newPassword.username ?? this.throwError(ServiceErrorType.BAD_REQUEST, "Username is required")
-		newPassword.website ?? this.throwError(ServiceErrorType.BAD_REQUEST, "Website is required")
-		newPassword.password ?? this.throwError(ServiceErrorType.BAD_REQUEST, "Password is required")
+		if (!newPassword.username) {
+			this.throwError(ServiceErrorType.BAD_REQUEST, "Username is required")
+		}
 
+		if (!newPassword.website) {
+			this.throwError(ServiceErrorType.BAD_REQUEST, "Website is required")
+		}
+			
+		if (!newPassword.password) {
+			this.throwError(ServiceErrorType.BAD_REQUEST, "Password is required")
+		}
+			
 		// Create id 
 		newPassword.id = randomUUID();
 		// Save the new password
